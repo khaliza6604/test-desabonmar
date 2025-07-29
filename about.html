@@ -411,12 +411,12 @@
                     <p class="role text-sm text-gray-600">Website Developer</p>
                 </div>
                 <div class="team-card flex flex-col items-center text-center p-4 rounded-lg shadow-md hover-zoom border border-gray-200" id="teamPhotoCard" data-modal-target="teamModal">
-                    <img alt="Foto tim mahasiswa KKN Gel. 114 Unhas Desa Bontomarannu" class="rounded-lg shadow-lg w-80 h-48 object-cover mb-4 border-4 border-[#2874A6]" src="images/test.jpg" onerror="this.src='https://placehold.co/320x192/CCCCCC/333333?text=Team+Photo'"/>
+                    <img alt="Foto tim mahasiswa KKN Gel. 114 Unhas Desa Bontomarannu" class="rounded-lg shadow-lg w-80 h-48 object-cover mb-4 border-4 border-[#2874A6]" src="images/test.jpg"/>
                     <p class="name text-lg font-semibold text-gray-800">Mahasiswa KKN Gel. 114 Unhas Desa Bontomarannu</p>
                     <p class="role text-sm text-gray-600">Anggota Posko Desa Bontomarannu</p>
                 </div>
                 <div class="team-card flex flex-col items-center text-center p-4 rounded-lg shadow-md hover-zoom border border-gray-200" id="logoCard" data-modal-target="logoModal">
-                    <img alt="Logo Posko KKN Unhas Desa Bontomarannu" class="rounded-full w-48 h-48 object-contain mb-4 border-4" src="images/logoposko.png" onerror="this.src='https://placehold.co/192x192/CCCCCC/333333?text=Logo'"/>
+                    <img alt="Logo Posko KKN Unhas Desa Bontomarannu" class="rounded-full w-48 h-48 object-contain mb-4 border-4" src="images/logoposko.png"/>
                     <p class="name text-lg font-semibold text-gray-800">Logo Posko KKN Unhas</p>
                     <p class="role text-sm text-gray-600">Desa Bontomarannu</p>
                 </div>
@@ -467,7 +467,7 @@
             <button id="closeDeveloperModal" class="absolute top-3 right-3 text-gray-600 text-3xl hover:text-gray-900 transition-colors focus:outline-none">×</button>
             <h3 class="text-2xl font-bold text-center mb-4 text-[#1A5276]">Khalizatul Jannah (El)</h3>
             <p class="text-center text-gray-600 mt-1 text-sm">H071221101</p>
-            <img src="images/lisa.png" alt="Foto pembuat website Khalizatul Jannah" class="w-full h-auto rounded-lg mb-4 hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x400/CCCCCC/333333?text=Developer+Modal'"/>
+            <img src="images/lisa.png" alt="Foto pembuat website Khalizatul Jannah" class="w-full h-auto rounded-lg mb-4 hover:scale-105 transition-transform duration-300"/>
             <p class="text-center text-gray-700 text-lg">Website Developer</p>
             <p class="text-center text-gray-600 mt-2 text-sm">Mahasiswa Universitas Hasanuddin, Fakultas MIPA, Prodi Sistem Informasi, Angkatan 22, salah satu anggota dari tim KKNT-114 Desa Bontomarannu.</p>
         </div>
@@ -497,7 +497,7 @@
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full relative modal-content-transition scale-95 opacity-0">
             <button id="closeLogoModal" class="absolute top-3 right-3 text-gray-600 text-3xl hover:text-gray-900 transition-colors focus:outline-none">×</button>
             <h3 class="text-2xl font-bold text-center mb-4 text-[#1A5276]">Logo Posko KKN Unhas</h3>
-            <img src="images/logoposko.png" alt="Logo Posko KKN Unhas Desa Bontomarannu" class="w-full h-auto rounded-lg mb-4" onerror="this.src='https://placehold.co/400x400/CCCCCC/333333?text=Logo+Modal'"/>
+            <img src="images/logoposko.png" alt="Logo Posko KKN Unhas Desa Bontomarannu" class="w-full h-auto rounded-lg mb-4"/>
             <p class="text-center text-gray-600 mt-2 text-sm">Logo yang mencerminkan kolaborasi antara semangat akademik, kepedulian sosial, dan potensi lokal. Perpaduan antara simbol kampus, laut, dan kapal menggambarkan misi utama mahasiswa dalam membawa kemajuan dan inovasi ke Desa Bontomarannu, sambil tetap menjunjung nilai-nilai budaya dan identitas lokal.
             </p>
         </div>
@@ -636,7 +636,7 @@
 
                 if (member.type === "teamPhoto") {
                     memberCard.innerHTML = `
-                        <img alt="Foto tim mahasiswa KKN Gel. 114 Unhas Desa Bontomarannu" class="rounded-lg shadow-lg w-full h-auto object-cover mb-4 border-4 border-[#2874A6]" src="${member.image}" onerror="this.src='https://placehold.co/600x400/CCCCCC/333333?text=Team+Photo+Modal'"/>
+                        <img alt="Foto tim mahasiswa KKN Gel. 114 Unhas Desa Bontomarannu" class="rounded-lg shadow-lg w-full h-auto object-cover mb-4 border-4 border-[#2874A6]" src="${member.image}"/>
                         <p class="name text-lg font-semibold text-gray-800">${member.name}</p>
                         <p class="role text-sm text-gray-600">${member.role}</p>
                         <p class="description text-xs text-gray-600 mt-2 leading-relaxed">${member.description}</p>
@@ -644,7 +644,7 @@
                 } else {
                     // Adjusted size for individual member photos to be larger and consistent with team photo aspect
                     memberCard.innerHTML = `
-                        <img alt="Foto ${member.name}" class="rounded-lg shadow-lg w-64 h-70 object-cover mb-3 border-2 border-[#2874A6]" src="${member.image}" onerror="this.src='https://placehold.co/256x256/CCCCCC/333333?text=Member'"/>
+                        <img alt="Foto ${member.name}" class="rounded-lg shadow-lg w-64 h-70 object-cover mb-3 border-2 border-[#2874A6]" src="${member.image}"/>
                         <p class="name text-md font-semibold text-gray-800">${member.name}</p>
                         <p class="nim text-xs text-gray-500 mt-0.5">${member.nim}</p>
                         <p class="role text-sm text-gray-700 mt-1">${member.role}</p>
