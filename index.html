@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Desa Bontomarannu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts: Poppins for body, Montserrat for headings -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Apply Poppins font globally for body text */
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333; /* Darker default text for better contrast */
+            line-height: 1.6; /* Improved readability */
+            overflow-x: hidden; /* Prevent horizontal scroll on animations */
+            background-color: #F0F2F5; /* Consistent background */
+        }
+
+        /* Apply Montserrat font for all headings */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Custom CSS for responsive navbar on small screens */
+        @media (max-width: 767px) {
+            #nav-menu {
+                display: none; /* Hidden by default on mobile */
+                position: absolute;
+                top: 100%; /* Position below the header */
+                left: 0;
+                right: 0;
+                background-color: #1a5276; /* Dark blue background for mobile menu */
+                padding: 1rem;
+                z-index: 1000;
+                border-radius: 0 0 0.75rem 0.75rem; /* Rounded bottom corners */
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+                animation: slideDown 0.3s ease-out forwards; /* Slide down animation */
+            }
+            #nav-menu.active {
+                display: block; /* Show when active */
+            }
+            #nav-menu ul {
+                flex-direction: column; /* Stack items vertically */
+                gap: 0.75rem; /* Spacing between menu items */
+            }
+            #nav-menu ul li {
+                width: 100%; /* Full width for each item */
+            }
+            #nav-menu ul li a {
+                display: block;
+                padding: 0.75rem 1rem;
+                text-align: center;
+                border-radius: 0.5rem; /* Rounded links */
+                background-color: rgba(255, 255, 255, 0.05); /* Subtle background for mobile links */
+                transition: background-color 0.2s ease;
+            }
+            #nav-menu ul li a:hover {
+                background-color: rgba(255, 255, 255, 0.15);
+            }
+        }
+
+        /* Keyframe animation for mobile menu */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Active navigation link styling with underline effect */
+        .nav-link {
+            transition: color 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            padding-bottom: 8px; /* Space for the underline */
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0%;
+            height: 3px;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #3498db; /* Bright blue underline */
+            border-radius: 2px;
+            transition: width 0.3s ease-in-out;
+        }
+        .nav-link.active::after,
+        .nav-link:hover::after {
+            width: 70%; /* Wider underline on active/hover */
+        }
+        .nav-link.active {
+            color: #3498db; /* Bright blue text when active */
+            font-weight: 700;
+        }
+
+        /* Hover zoom effect for images */
+        .hover-zoom:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Custom scroll effect for header */
+        .header-scrolled {
+            background-image: linear-gradient(to right, rgba(26, 82, 118, 0.98), rgba(40, 116, 166, 0.98));
+            backdrop-filter: blur(10px); /* Stronger blur effect */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* Stronger shadow when scrolled */
+            padding-top: 0.75rem; /* Slightly reduced padding */
+            padding-bottom: 0.75rem;
+        }
+
+        /* Custom scrollbar for modals */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #e0e0e0; /* Lighter track */
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Parallax background for Hero section */
+        .parallax-bg {
+            background-image: url('images/home.jpg'); 
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+        }
+        @media (max-width: 767px) {
+            .parallax-bg {
+                background-attachment: scroll; /* Disable parallax on mobile for performance */
+            }
+        }
+
+        /* Scroll-triggered animation */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .animate-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero text animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .animate-fade-in-down { animation: fadeInDown 1s ease-out forwards; }
+        .animate-fade-in-up { animation: fadeInUp 1s ease-out forwards; }
+        .animate-fade-in-left { animation: fadeInLeft 1s ease-out forwards; }
+        .animate-fade-in-down-delay-0-3 { animation: fadeInDown 1s ease-out forwards; animation-delay: 0.3s; }
+        .animate-fade-in-up-delay-0-6 { animation: fadeInUp 1s ease-out forwards; animation-delay: 0.6s; }
+        .animate-fade-in-left-delay-0-9 { animation: fadeInLeft 1s ease-out forwards; animation-delay: 0.9s; }
+        .animate-fade-in-delay-1-2 { animation: fadeIn 1s ease-out forwards; animation-delay: 1.2s; }
+        /* Removed animate-pulse-slow class as it's no longer needed for continuous pulsing */
+
+        /* Modal specific animation */
+        .animate-modal-in { animation: fadeIn 0.3s ease-out forwards; }
+        .animate-modal-out { animation: fadeOut 0.3s ease-out forwards; }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* Data Monografi Card Hover Effect */
+        .data-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .data-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Section block hover effect */
+        .section-block {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .section-block:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-[#F0F2F5] text-gray-800">
+    <!-- Header Section -->
+    <header class="fixed top-0 left-0 right-0 bg-gradient-to-r from-[#1A5276] to-[#2874A6] p-4 flex items-center z-50 shadow-lg transition-all duration-300 ease-in-out" id="main-header">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center">
+                <img
+                    alt="Logo of Bulukumba"
+                    class="h-16 w-16 mr-4 transform hover:rotate-6 transition-transform duration-300"
+                    height="80"
+                    src="images/logobulkum.png"
+                    width="80"
+                />
+                <div>
+                    <h1 class="text-white text-3xl font-extrabold tracking-wider">Desa Bontomarannu</h1>
+                    <p class="text-white text-sm opacity-90">Kabupaten Bulukumba</p>
+                </div>
+            </div>
+            <!-- Hamburger Icon for Mobile -->
+            <button id="hamburger" class="md:hidden text-white text-3xl focus:outline-none p-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors duration-200">
+                <i class="fas fa-bars"></i>
+            </button>
+            <!-- Navigation Menu -->
+            <nav id="nav-menu" class="ml-auto hidden md:block">
+                <ul class="flex space-x-6 text-white">
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg
+                            group-hover:text-white transition-all duration-300"
+                            href="index.html"
+                        >
+                            Beranda
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg
+                            group-hover:text-white transition-all duration-300"
+                            href="profildesa.html"
+                        >
+                            Profil Desa
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg
+                            group-hover:text-white transition-all duration-300"
+                            href="infografis.html"
+                        >
+                            Infografis
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg 
+                            group-hover:text-white transition-all duration-300"
+                            href="umkm.html"
+                        >
+                            UMKM
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg 
+                            group-hover:text-white transition-all duration-300"
+                            href="galeri.html"
+                        >
+                            Galeri
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg
+                            group-hover:text-white transition-all duration-300"
+                            href="about.html"
+                        >
+                            About
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="relative pt-24 md:pt-32 overflow-hidden h-[550px] md:h-[650px] parallax-bg">
+        <!-- Single gradient overlay from bottom, subtle -->
+        <div class="absolute inset-0 bg-gradient-to-t from-[#1A5276]/70 to-transparent"></div>
+        <!-- Centered content for Hero Section -->
+        <div class="absolute inset-0 flex items-center justify-center p-8 md:p-16 lg:p-24">
+            <div class="text-white max-w-2xl text-center">
+                <div class="border-l-4 border-[#3498DB] pl-4 md:pl-6 mx-auto inline-block text-left">
+                    <h1 class="text-3xl md:text-5xl text-white font-bold drop-shadow-md animate-fade-in-down">Selamat Datang,</h1>
+                    <h2 class="text-4xl md:text-6xl font-extrabold leading-tight drop-shadow-lg mt-2 animate-fade-in-up-delay-0-6">
+                        Di Website Profil
+                        <br/>
+                        Desa Bontomarannu
+                    </h2>
+                </div>
+                <p class="mt-6 text-lg md:text-xl opacity-90 drop-shadow-sm animate-fade-in-left-delay-0-9">
+                    Jelajahi informasi lengkap mengenai Desa Bontomarannu, sejarah, potensi, UMKM, dan data monografi yang menarik.
+                </p>
+                <a href="#profil-desa-section" class="mt-8 inline-flex items-center bg-[#3498DB] text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-[#2880B9] transition-all duration-300 transform hover:scale-105 group animate-fade-in-delay-1-2">
+                    Pelajari Lebih Lanjut
+                    <i class="fas fa-chevron-right ml-3 group-hover:translate-x-1 transition-transform duration-200"></i>
+                </a>
+            </div>
+        </div>
+        <div class="absolute bottom-6 right-6 flex space-x-4">
+            <img alt="Logo Universitas Hasanuddin" class="w-20 h-20 md:w-24 md:h-24 border-4-white hover-zoom" height="80" src="images/logobulkum.png" width="80"/>
+            <img alt="Logo Kabupaten Bulukumba" class="w-20 h-20 md:w-24 md:h-24 border-4-white hover-zoom" height="80" src="images/logoounhas.png" width="80"/>
+        </div>
+    </div>
+
+    <div class="relative w-full h-24 -mt-12 z-20">
+        <svg class="absolute bottom-0 left-0 w-full h-full text-white" viewBox="0 0 1440 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <!-- Original wave path for a smoother transition -->
+            <path d="M0 0C240 50 480 100 720 100C960 100 1200 50 1440 0V100H0V0Z"></path>
+        </svg>
+    </div>
+
+    <!-- Profil Desa Section -->
+    <div id="profil-desa-section" class="container mx-auto px-4 py-12 md:px-8 md:py-16 bg-white rounded-xl shadow-2xl my-12 section-block animate-on-scroll">
+        <div class="flex flex-col md:flex-row items-start md:items-center">
+            <div class="md:w-2/3 md:pr-12">
+                <div class="flex items-center mb-6">
+                    <div class="w-2 bg-[#2874A6] h-16 mr-5 rounded-full"></div>
+                    <div>
+                        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">Profil</h1>
+                        <h2 class="text-2xl md:text-3xl text-gray-600 font-semibold">Desa Bontomarannu</h2>
+                    </div>
+                </div>
+                <p class="mb-4 text-justify leading-relaxed text-gray-700 text-lg">
+                    Desa Bontomarannu merupakan salah satu desa yang terletak di Kecamatan Bontotiro, Kabupaten Bulukumba, Sulawesi Selatan. Nama "Bontomarannu" sendiri dalam bahasa Konjo atau Bugis-Makassar dapat diartikan sebagai "bukit (bonto) yang indah/menyenangkan (marannu)". Hal ini merujuk pada kondisi geografis desa yang memiliki perbukitan dan topografi yang menarik. 
+                </p>
+                <p class="mb-4 text-justify leading-relaxed text-gray-700 text-lg">
+                    Luas wilayah Desa ini seluas 756 Hektar Atau 2,75 Km bujur sangkar. Desa ini berbatasan dengan Desa Bontobarua di utara, Kelurahan Benjala di selatan, Desa Bontotangnga di timur, Desa Manyampa di barat.
+                </p>
+                <p class="mb-4 text-justify leading-relaxed text-gray-700 text-lg">
+                    Desa Bontomarannu adalah salah satu dari 12 desa di Kecamatan Bontotiro, bersama Desa Batang, Bontobarua, Bonto Bulaeng, Bonto Tangnga, Buhung Bundang, Caramming, Dwi Tiro, Ekatiro, Pakubalaho, Tamalanrea, dan Tritiro
+                </p>
+                <p class="mb-4 text-justify leading-relaxed text-gray-700 text-lg">
+                    Desa ini memiliki berbagai jenjang pendidikan seperti TK, SD, PAUD. Juga memiliki beberapa Masjid, lapangan, posyandu dan poskedes. Desa Bontomarannu sendiri memiliki 3 Dusun dan 12 RK.
+                </p>
+            </div>
+            <div class="md:w-1/3 flex justify-center md:justify-end mt-10 md:mt-0">
+                <div class="text-center w-full">
+                    <img
+                        src="images/kantor.JPG"
+                        alt="Lokasi Desa Bontomarannu"
+                        class="w-full h-auto max-h-[450px] object-cover rounded-2xl shadow-xl transition-transform duration-300 hover:scale-105 border-4 border-gray-100"
+                    />
+                    <p class="text-sm text-gray-500 mt-4 font-semibold tracking-wide">
+                        Kantor Desa Bontomarannu, Kecamatan Bontomarannu, Bulukumba
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sejarah Desa Section -->
+    <div class="container mx-auto px-4 py-12 md:px-8 md:py-16 bg-white text-gray-800 rounded-xl shadow-2xl my-12 section-block animate-on-scroll">
+        <div class="flex flex-col md:flex-row items-start md:items-center">
+            <div class="md:w-1/3 flex justify-center md:justify-start mb-10 md:mb-0">
+                <div class="text-center">
+                    <img alt="Peta desa Bontomarannu" class="border-4 border-gray-100 rounded-2xl shadow-xl hover-zoom w-full max-w-[400px] h-auto object-cover" height="600" src="galeri/batas.JPG" width="400"/>
+                    <p class="text-sm text-gray-500 mt-4 font-semibold tracking-wide">
+                        Tugu Pembatas Desa Bontomarannu
+                    </p>
+                </div>
+            </div>
+            <div class="md:w-2/3 md:pl-12">
+                <div class="flex items-center mb-6">
+                    <div class="w-2 bg-[#2874A6] h-16 mr-5 rounded-full"></div>
+                    <div>
+                        <h1 class="text-4xl md:text-5xl font-extrabold text-[#2874A6] leading-tight">Sejarah</h1>
+                        <h2 class="text-2xl md:text-3xl text-gray-600 font-semibold">Desa Bontomarannu</h2>
+                    </div>
+                </div>
+                <p class="mb-4 text-justify text-gray-700 leading-relaxed text-lg">
+                    Desa Bontomarannu berdiri pertama kali pada Tahun 1962 yang awalnya bernama "Desa Bontomarannu" dibawah naungan Distrik Bontotanga, dengan Kepala Desa saat itu adalah Bpk. H.Andi Tamar Jaya Kemudian dimekarkan kembali Desa Bontobarua Dengan Kepala Desa Bpk. Andi ABD. Rasyid Karaeng Peluru dan Kemudian dimekarkan kembali, pada Tahun 1988 terbentuklah Desa Bontomarannu yang dijabat oleh Bpk H. Andi Muh. Syafri yang di berikan mandat untuk menjabat sebagai Kepala Desa Bontomarannu selama kurun waktu 15 Tahun.
+                </p>
+                <p class="mb-4 text-justify text-gray-700 leading-relaxed text-lg">
+                    Kemudian pada bulan Juli Tahun 2003 Desa Bontomarannu mengadakan Pemilihan untuk Periode 2003-2008, yang saat itu diikuti oleh 3 (tiga) kontestan, Yakni 1. Andi Mappangara, 2. Andi Basrung S.Sos, 3.Asbar Ali, 4. Andi Muh. Rais, 5. Abd. Latif yang kemudian Saudara "Andi Mappangara" terpilih untuk masa Jabatan 5 (Lima) Tahun. Dan pada Tahun 2008 Desa Bontomarannu kembali melaksanakan pesta Demokrasi melalui Pemilihan Kepala Desa, yang saat itu Pimpinan BPD di Pimpin oleh Sdri. Ibu Nurhayati Sebagai lembaga mitra Pemerintah Desa BPD menjalankan tugas sebagai mitra menjembatani pemilihan Kepala Desa yang sukses, aman dan tertib yang saat itu diikuti oleh 3 (empat) Calon Yakni (1. Andi Mappangara, 2). Jamaluddin, SE, 3). Andi Basrung. S.Sos dan kembali "Andi Mappangara mendapatkan amanah dari masyarakat Bontomarannu untuk Periode 2008-2013, dan Kemudian Andi Mappangara Mengundurkan diri dari jabatannya Tahun 2013 dan maju menjadi Calon Legislatif.
+                </p>
+                <!-- New "Read More" button for Sejarah Desa -->
+                <button id="openHistoryModal" class="mt-6 inline-flex items-center bg-[#3498DB] text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-[#2880B9] transition-all duration-300 transform hover:scale-105 group">
+                    Baca Sejarah Lengkap
+                    <i class="fas fa-book-open ml-3 group-hover:translate-x-1 transition-transform duration-200"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Peta Lokasi Desa Section -->
+    <div class="max-w-7xl mx-auto px-4 py-12 md:px-8 md:py-16 animate-on-scroll">
+        <div class="flex items-center mb-8">
+            <div class="w-2 bg-[#2874A6] h-16 mr-5 rounded-full"></div>
+            <div>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">Peta Lokasi Desa</h1>
+                <p class="text-2xl md:text-3xl text-gray-600 font-semibold">Desa Bontomarannu</p>
+            </div>
+        </div>
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white p-8 rounded-xl shadow-2xl section-block">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Informasi Geografis</h2>
+                <hr class="my-6 border-gray-200" />
+                <p class="text-gray-600 font-semibold mb-3 text-lg">Batas Desa</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2 text-base">
+                    <div>
+                        <p class="text-gray-500 text-sm">Utara</p>
+                        <p class="text-gray-800 font-medium">Desa Bontobarua</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Timur</p>
+                        <p class="text-gray-800 font-medium">Desa Bontotangnga, Desa Tamalanrea</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Selatan</p>
+                        <p class="text-gray-800 font-medium">Kelurahan Benjala</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Barat</p>
+                        <p class="text-gray-800 font-medium">Desa Manyampa</p>
+                    </div>
+                </div>
+                <hr class="my-6 border-gray-200" />
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-base">
+                    <div>
+                        <p class="text-gray-500 font-semibold text-sm">Garis Lintang</p>
+                        <p class="text-gray-800 font-medium">5°27′53.60″S</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 font-semibold text-sm">Garis Bujur</p>
+                        <p class="text-gray-800 font-medium">120°34′6.94″BT</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 font-semibold text-sm">Luas Desa</p>
+                        <p class="text-gray-800 font-medium">7.56km²</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 font-semibold text-sm">Jumlah Penduduk</p>
+                        <p class="text-gray-800 font-medium"> 1.783 Jiwa</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-2xl section-block">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Peta Interaktif</h2>
+                <div class="text-center w-full">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6852.716892133741!2d120.34060306030332!3d-5.466313515721959!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbc08a90a67a7ad%3A0x419446574698950!2sBonto%20Marannu%2C%20Kec.%20Bonto%20Tiro%2C%20Kabupaten%20Bulukumba%2C%20Sulawesi%20Selatan!5e1!3m2!1sid!2sid!4v1753423297173!5m2!1sid!2sid" 
+                        width="100%" 
+                        height="450" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                    <p class="text-sm text-gray-500 mt-4">
+                        Lokasi Desa Bontomarannu, Kecamatan Bonto Tiro, Bulukumba 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Monografi Section -->
+    <div class="px-4 py-8 md:px-8 md:py-10 bg-gradient-to-br from-[#E3F2FD] to-[#D1ECF1] text-gray-800 rounded-xl shadow-2xl my-12 text-center animate-on-scroll">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-[#1A5276] mb-10 leading-tight">Data Monografi Desa</h1>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-8 max-w-6xl mx-auto">
+            <div class="data-card text-center flex flex-col items-center p-4 bg-white rounded-lg shadow-md">
+                <i class="fas fa-map-marker-alt text-5xl text-[#2874A6] mb-3"></i>
+                <p class="text-4xl md:text-5xl font-extrabold text-[#2874A6]">3</p>
+                <p class="text-gray-700 text-lg font-medium">Dusun</p>
+            </div>
+            <div class="data-card text-center flex flex-col items-center p-4 bg-white rounded-lg shadow-md">
+                <i class="fas fa-users text-5xl text-[#2874A6] mb-3"></i>
+                <p class="text-4xl md:text-5xl font-extrabold text-[#2874A6]">1.783</p>
+                <p class="text-gray-700 text-lg font-medium">Jiwa Penduduk</p>
+            </div>
+            <div class="data-card text-center flex flex-col items-center p-4 bg-white rounded-lg shadow-md">
+                <i class="fas fa-ruler-combined text-5xl text-[#2874A6] mb-3"></i>
+                <p class="text-4xl md:text-5xl font-extrabold text-[#2874A6]">7,56 Km<sup>2</sup></p>
+                <p class="text-gray-700 text-lg font-medium">Luas Wilayah</p>
+            </div>
+            <div class="data-card text-center flex flex-col items-center p-4 bg-white rounded-lg shadow-md">
+                <i class="fas fa-home text-5xl text-[#2874A6] mb-3"></i>
+                <p class="text-4xl md:text-5xl font-extrabold text-[#2874A6]">572</p>
+                <p class="text-gray-700 text-lg font-medium">Kepala Keluarga</p>
+            </div>
+            <div class="data-card text-center flex flex-col items-center p-4 bg-white rounded-lg shadow-md">
+                <i class="fas fa-list-ol text-5xl text-[#2874A6] mb-3"></i>
+                <p class="text-4xl md:text-5xl font-extrabold text-[#2874A6]">12</p>
+                <p class="text-gray-700 text-lg font-medium">Rukun Keluarga (RK)</p>
+            </div>
+        </div>
+        <div class="mt-12">
+            <button class="inline-flex items-center bg-[#3498DB] text-white font-bold py-4 px-10 rounded-full shadow-xl hover:bg-[#2880B9] transition-colors duration-300 transform hover:scale-105 group text-lg" id="openMonographyModal">
+                Lihat Detail Monografi
+                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-200"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Monography Detail Modal -->
+    <div id="monographyModal" class="fixed inset-0 bg-black bg-opacity-70 z-[9999] hidden flex items-center justify-center p-4">
+        <div class="bg-gray-100 p-8 rounded-xl shadow-2xl max-w-4xl w-full relative my-8 max-h-[90vh] overflow-y-auto modal-content animate-modal-in">
+            <button id="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-4xl font-light leading-none transition-colors duration-200">&times;</button>
+
+            <div class="clear-both">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Detail Data Monografi</h1>
+                </div>
+
+                <div class="space-y-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[#2874A6] mb-4">Informasi Umum Desa</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <p class="text-gray-500 text-sm">Provinsi</p>
+                                <p class="text-gray-800 font-semibold text-lg">Sulawesi Selatan</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Kode Pos</p>
+                                <p class="text-gray-800 font-semibold text-lg">92572</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Kabupaten/Kota</p>
+                                <p class="text-gray-800 font-semibold text-lg">Bulukumba</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Jumlah Dusun</p>
+                                <p class="text-gray-800 font-semibold text-lg">3</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Kecamatan</p>
+                                <p class="text-gray-800 font-semibold text-lg">Bontotiro</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Jumlah RK</p>
+                                <p class="text-gray-800 font-semibold text-lg">12</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-300">
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-[#2874A6] mb-4">Data Kependudukan & Wilayah</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <p class="text-gray-500 text-sm">Luas Wilayah (Km Persegi)</p>
+                                <p class="text-gray-800 font-semibold text-lg">7,56</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Jumlah Penduduk</p>
+                                <p class="text-gray-800 font-semibold text-lg">± 1.783 </p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Jumlah Kepala Keluarga</p>
+                                <p class="text-gray-800 font-semibold text-lg">± 572 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-300">
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-[#2874A6] mb-4">Profesi Penduduk</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <p class="text-gray-500 text-sm">PNS</p>
+                                <p class="text-gray-800 font-semibold text-lg">± 17 </p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Wiraswasta / Pedagang</p>
+                                <p class="text-gray-800 font-semibold text-lg">± 198</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Petani</p>
+                                <p class="text-gray-800 font-semibold text-lg">± 204</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Nelayan</p>
+                                <p class="text-gray-800 font-semibold text-lg">± 0</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Peternak</p>
+                                <p class="text-gray-800 font-semibold text-lg">± 0 </p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Pegawai Swasta</p>
+                                <p class="text-gray-800 font-semibold text-lg">± 0 </p>
+                            </div>
+                            <!-- "Buruh Kayu / Supir" is now in the first column of the next row -->
+                            <div>
+                                <p class="text-gray-500 text-sm">Buruh Kayu / Supir</p>
+                                <p class="text-gray-800 font-semibold text-lg">± 0 </p>
+                            </div>
+                            <!-- "Selanjutnya" button with updated styling -->
+                            <div class="flex justify-end items-center">
+                                <a href="infografis.html" class="inline-flex items-center bg-[#3498DB] text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-[#2880B9] transition-all duration-300 transform hover:scale-105 group text-lg">
+                                    Selengkapnya
+                                    <i class="fas fa-chevron-right ml-3 group-hover:translate-x-1 transition-transform duration-200"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Detail Modal -->
+    <div id="historyModal" class="fixed inset-0 bg-black bg-opacity-70 z-[9999] hidden flex items-center justify-center p-4">
+        <div class="bg-gray-100 p-8 rounded-xl shadow-2xl max-w-4xl w-full relative my-8 max-h-[90vh] overflow-y-auto modal-content animate-modal-in">
+            <button id="closeHistoryModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-4xl font-light leading-none transition-colors duration-200">&times;</button>
+
+            <div class="clear-both">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Sejarah Lengkap Desa Bontomarannu</h1>
+                </div>
+
+                <div class="space-y-6 text-gray-700 leading-relaxed text-lg">
+                    <p>
+                        Kemudian pada tanggal 17 Desember 2013, Desa Bontomarannu dengan pertama kalinya melaksanakan Pemilihan Kepala Desa secara serentak dari 64 (enam Puluh empat) Desa se Kabupaten Bulukumba. Untuk Desa Bontomarannu ada 4 (Empat) orang yang mengikuti tahapan dan proses seleksi yakni :
+                    </p>
+                    <ul class="list-disc list-inside ml-4 space-y-1">
+                        <li>Andi Pahruddin,</li>
+                        <li>Andi Sersina,</li>
+                        <li>Jamaluddin SE,</li>
+                        <li>Sayfuddin.</li>
+                    </ul>
+                    <p>
+                        Kemudian Bapak Andi Pahruddin di berikan Amanah untuk menjabat sebagai Kepala Desa Bontomarannu Periode 2014-2020, Bapak Andi Pahruddin Juga sebelumnya menjabat sebagai Perangkat Desa.
+                    </p>
+                    <p>
+                        Kemudian pada tanggal 5 Maret 2020, Desa Bontomarannu dengan Kedua kalinya melaksanakan Pemilihan Kepala Desa secara serentak dari 64 (enam Puluh empat) Desa sekabupaten Bulukumba. Untuk Desa Bontomarannu ada 3 (Tiga) orang yang mengikuti tahapan dan proses seleksi yakni:
+                    </p>
+                    <ul class="list-disc list-inside ml-4 space-y-1">
+                        <li>Andi Pahruddin,</li>
+                        <li>Sampara,</li>
+                        <li>Junaedi Latif.</li>
+                    </ul>
+                    <p>
+                        Tahapan pelaksanaan pemilihan di awali oleh Pembentukan panitia Pemilihan yang mana saat itu disepakati Sdr. Nurbaya, S.Pd selaku Ketua Panitia Pemilihan Melalui Pemilihan, Dan Alhamdulillah Bpk. Andi Pahruddin mendapatkan perolehan suara sah terbanyak, mengalahkan kandidat lain dari kontestasi tersebut Pada tanggal 7 Maret 2020, PPKD menyampaikan hasil pemilihan Kepala Desa kepada BPD, yang selanjutnya ditetapkan menjadi Kepala Desa Terpilih melalui Rapat Pleno untuk selanjutnya dilaporkan ke Pemerintah Daerah melalui Camat untuk proses selanjutnya.
+                    </p>
+                    <p>
+                        Kemudian Pada Tanggal 15 April 2020 bertempat di Ruang Pola Kantor Bupati Bulukumba dilantik dan pengambilan sumpah untuk masa Jabatan 2020-2028.
+                    </p>
+                    <p>
+                        Dalam perjalanan waktu menjalankan Tugas dan fungsi selaku Kepala Desa yang baru, secara Nasional kondisi Indonesia secara umum mengalami dan menghadapi wabah pandemi Covid-19 yang terasa sampai ke wilayah Desa Bontomarannu. Dengan berbagai kebijakan secara Nasional, maka Pemerintah Desa Bontomarannu merombak berbagai kebijakan dan program prioritas dengan mengalihkan anggaran dalam rangka penanganan Covid-19 melalui Musyawarah Khusus Insidentil bersama dengan kelembagaan dan tokoh masyarakat lainnya.
+                    </p>
+
+                    <h2 class="text-2xl font-bold text-[#2874A6] mb-4 mt-8">1. Nama-nama Kepala Desa Bontomarannu</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+                            <thead>
+                                <tr class="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6 text-left">No.</th>
+                                    <th class="py-3 px-6 text-left">Periode</th>
+                                    <th class="py-3 px-6 text-left">Nama Kepala Desa</th>
+                                    <th class="py-3 px-6 text-left">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 text-sm font-light">
+                                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">1.</td>
+                                    <td class="py-3 px-6 text-left">1988 s/d 2003</td>
+                                    <td class="py-3 px-6 text-left">H.Andi Muh. Syafri</td>
+                                    <td class="py-3 px-6 text-left">Kepala Desa Pertama</td>
+                                </tr>
+                                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">2.</td>
+                                    <td class="py-3 px-6 text-left">2003 s/d 2008</td>
+                                    <td class="py-3 px-6 text-left">Andi Mappangara</td>
+                                    <td class="py-3 px-6 text-left">Kepala Desa</td>
+                                </tr>
+                                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">3.</td>
+                                    <td class="py-3 px-6 text-left">2008 s/d 2013</td>
+                                    <td class="py-3 px-6 text-left">Andi Mappangara</td>
+                                    <td class="py-3 px-6 text-left">Kepala Desa</td>
+                                </tr>
+                                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">4.</td>
+                                    <td class="py-3 px-6 text-left">2014 s/d 2020</td>
+                                    <td class="py-3 px-6 text-left">Andi Pahruddin</td>
+                                    <td class="py-3 px-6 text-left">Kepala Desa</td>
+                                </tr>
+                                <tr class="hover:bg-gray-100">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">5.</td>
+                                    <td class="py-3 px-6 text-left">2021 s/d 2028</td>
+                                    <td class="py-3 px-6 text-left">Andi Pahruddin</td>
+                                    <td class="py-3 px-6 text-left">Kepala Desa</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h2 class="text-2xl font-bold text-[#2874A6] mb-4 mt-8">2. Luas Wilayah</h2>
+                    <p>
+                        Luas wilayah Desa Bontomarannu adalah: 7,56 ha dengan penggunaan sebagai berikut:
+                    </p>
+                    <ul class="list-disc list-inside ml-4 space-y-1">
+                        <li>Area permukiman: 2,5 ha</li>
+                        <li>Tegal/tanah kering: 4 ha</li>
+                        <li>Tanah sawah: 50 ha</li>
+                        <li>Fasilitas umum: yang terdiri dari Desa, tanah lapangan & perkantoran.</li>
+                    </ul>
+
+                    <h2 class="text-2xl font-bold text-[#2874A6] mb-4 mt-8">3. Keadaan Topografi</h2>
+                    <p>
+                        Secara umum keadaan topografi dan kondisi Desa Bonto Marannu adalah daerah dataran rendah dan daerah perbukitan, dengan ketinggian dari permukaan laut 169 m, serta berada pada titik koordinat Desa Lattude (LL/LS: 5482506 dan Longtude (BB/BT: 120340694).
+                    </p>
+
+                    <h2 class="text-2xl font-bold text-[#2874A6] mb-4 mt-8">4. Iklim</h2>
+                    <p>
+                        Iklim Desa Bontomarannu sama halnya dengan desa-desa lain dalam wilayah negara Kesatuan Republik Indonesia beriklim tropis dengan dua musim, yakni musim kemarau dan musim hujan.
+                    </p>
+
+                    <h2 class="text-2xl font-bold text-[#2874A6] mb-4 mt-8">5. Wilayah Administrasi dan Pemerintahan Desa</h2>
+                    <p class="mb-4">
+                        Desa Bontomarannu dalam persebaran wilayah terdiri 5 (lima) unsur wilayah/dusun sebagai berikut:
+                    </p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+                            <thead>
+                                <tr class="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6 text-left">Nama Dusun</th>
+                                    <th class="py-3 px-6 text-left">Jumlah RW</th>
+                                    <th class="py-3 px-6 text-left">Jumlah RT</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 text-sm font-light">
+                                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">Tunumbeng</td>
+                                    <td class="py-3 px-6 text-left">2</td>
+                                    <td class="py-3 px-6 text-left">2</td>
+                                </tr>
+                                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">Tulekko</td>
+                                    <td class="py-3 px-6 text-left">2</td>
+                                    <td class="py-3 px-6 text-left">2</td>
+                                </tr>
+                                <tr class="hover:bg-gray-100">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">Samakore</td>
+                                    <td class="py-3 px-6 text-left">2</td>
+                                    <td class="py-3 px-6 text-left">2</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-black bg-opacity-70 z-[99999] hidden flex items-center justify-center">
+        <div class="bg-white p-8 rounded-xl shadow-2xl text-center flex flex-col items-center justify-center animate-modal-in">
+            <i class="fas fa-spinner fa-spin text-6xl text-[#3498DB] mb-4"></i>
+            <p class="text-gray-800 text-lg font-semibold">Memuat Data...</p>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-[#1F2937] text-white px-4 py-8 md:px-8 md:py-10 mt-12 shadow-inner">
+        <div class="container mx-auto">
+            <div class="flex flex-col items-center pb-6 border-b border-gray-700 mb-6">
+                <div class="text-center">
+                    <h1 class="text-xl md:text-2xl text-white font-bold">Desa Bontomarannu</h1>
+                    <p class="text-sm text-gray-300 mt-1">Kec. Bontotiro, Kab. Bulukumba, Sulawesi Selatan</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 text-justify">
+                <div class="space-y-3">
+                    <h2 class="text-lg text-white font-bold flex items-center"><i class="fas fa-globe mr-2 text-[#3498DB]"></i>Website Profil Desa</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Website profil Desa merupakan situs web yang memuat informasi dasar mengenai desa, sejarah, visi dan misi desa, sampai dengan peta wilayah desa.
+                    </p>
+                </div>
+                <div class="space-y-3">
+                    <h2 class="text-lg text-white font-bold flex items-center"><i class="fas fa-code mr-2 text-[#3498DB]"></i>Developer</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Website ini dibuat oleh Khalizatul Jannah, Mahasiswa KKN Universitas Hasanuddin Gelombang 114 Desa Bontomarannu pada Juli-Agustus 2025.
+                    </p>
+                </div>
+                <div class="space-y-3">
+                    <h2 class="text-lg text-white font-bold flex items-center"><i class="fas fa-bullseye mr-2 text-[#3498DB]"></i>Harapan &amp; Tujuan</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Situs web profil ini dibuat untuk tujuan promosi dan publisitas Desa Bontomarannu agar lebih dikenal oleh khalayak ramai baik di dalam maupun di luar Desa Bontomarannu.
+                    </p>
+                </div>
+            </div>
+            <div class="text-center mt-10 border-t border-gray-700 pt-6">
+                <p class="text-xs text-gray-400">
+                    © 2025 Desa Bontomarannu - All rights reserved
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Navbar Active Link Logic ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const currentPath = window.location.pathname.split('/').pop();
+
+            navLinks.forEach(link => {
+                // Set active class on page load
+                if (link.getAttribute('href') === currentPath || (currentPath === '' && link.getAttribute('href') === 'index.html')) {
+                    link.classList.add('active');
+                }
+
+                // Add click listener for active class
+                link.addEventListener('click', function() {
+                    navLinks.forEach(l => l.classList.remove('active')); // Remove active from all
+                    this.classList.add('active'); // Add active to clicked link
+                });
+            });
+
+            // --- Hamburger Menu Toggle ---
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('nav-menu');
+
+            hamburger.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!hamburger.contains(event.target) && !navMenu.contains(event.target) && navMenu.classList.contains('active')) {
+                    navMenu.classList.remove('active');
+                }
+            });
+
+            // --- Header Scroll Effect ---
+            const mainHeader = document.getElementById('main-header');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 80) { // Adjust scroll threshold as needed
+                    mainHeader.classList.add('header-scrolled');
+                } else {
+                    mainHeader.classList.remove('header-scrolled');
+                }
+            });
+
+            // --- Monography Detail Modal Logic with Loading ---
+            const openMonographyModalBtn = document.getElementById('openMonographyModal');
+            const monographyModal = document.getElementById('monographyModal');
+            const closeModalBtn = document.getElementById('closeModal');
+            const loadingModal = document.getElementById('loadingModal'); // Get the new loading modal
+
+            // This modal is only opened when the "Lihat Detail Monografi" button is clicked.
+            // It will not appear automatically when the homepage is loaded or navigated to.
+            openMonographyModalBtn.addEventListener('click', function(e) {
+                e.preventDefault(); // Prevent default link behavior
+                loadingModal.classList.remove('hidden'); // Show loading modal
+                document.body.style.overflow = 'hidden'; // Prevent scrolling background
+
+                setTimeout(() => {
+                    loadingModal.classList.add('hidden'); // Hide loading modal after 0.5 seconds
+                    monographyModal.classList.remove('hidden'); // Show monography modal
+                }, 500);
+            });
+
+            closeModalBtn.addEventListener('click', function() {
+                monographyModal.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore scrolling
+            });
+
+            monographyModal.addEventListener('click', function(e) {
+                if (e.target === monographyModal) {
+                    monographyModal.classList.add('hidden');
+                    document.body.style.overflow = ''; // Restore scrolling
+                }
+            });
+
+            // --- History Detail Modal Logic with Loading ---
+            const openHistoryModalBtn = document.getElementById('openHistoryModal');
+            const historyModal = document.getElementById('historyModal');
+            const closeHistoryModalBtn = document.getElementById('closeHistoryModal');
+
+            // This modal is only opened when the "Baca Sejarah Lengkap" button is clicked.
+            // It will not appear automatically when the homepage is loaded or navigated to.
+            if (openHistoryModalBtn) {
+                openHistoryModalBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    loadingModal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+
+                    setTimeout(() => {
+                        loadingModal.classList.add('hidden');
+                        historyModal.classList.remove('hidden');
+                    }, 500);
+                });
+            }
+
+            if (closeHistoryModalBtn) {
+                closeHistoryModalBtn.addEventListener('click', function() {
+                    historyModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                });
+            }
+
+            if (historyModal) {
+                historyModal.addEventListener('click', function(e) {
+                    if (e.target === historyModal) {
+                        historyModal.classList.add('hidden');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+
+            // --- Scroll Animation Logic ---
+            const scrollElements = document.querySelectorAll('.animate-on-scroll');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    } else {
+                        // Optional: remove 'is-visible' if you want elements to re-animate on scroll back up
+                        // entry.target.classList.remove('is-visible'); 
+                    }
+                });
+            }, { threshold: 0.2 }); // Adjust threshold as needed (e.g., 0.2 means 20% of element visible)
+
+            scrollElements.forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>

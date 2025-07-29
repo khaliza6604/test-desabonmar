@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Desa Bontomarannu - UMKM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333; /* Darker default text for better contrast */
+            line-height: 1.6; /* Improved readability */
+            overflow-x: hidden; /* Prevent horizontal scroll on animations */
+            background-color: #F0F2F5; /* Consistent background with Canvas */
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
+        @media (max-width: 767px) {
+            #nav-menu {
+                display: none; /* Hidden by default on mobile */
+                position: absolute;
+                top: 100%; /* Position below the header */
+                left: 0;
+                right: 0;
+                background-color: #1a5276; /* Dark blue background for mobile menu */
+                padding: 1rem;
+                z-index: 1000;
+                border-radius: 0 0 0.75rem 0.75rem; /* Rounded bottom corners */
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow from Canvas */
+                animation: slideDown 0.3s ease-out forwards; /* Slide down animation */
+            }
+            #nav-menu.active {
+                display: block; /* Show when active */
+            }
+            #nav-menu ul {
+                flex-direction: column; /* Stack items vertically */
+                gap: 0.75rem; /* Spacing between menu items */
+            }
+            #nav-menu ul li {
+                width: 100%; /* Full width for each item */
+            }
+            #nav-menu ul li a {
+                display: block;
+                padding: 0.75rem 1rem;
+                text-align: center;
+                border-radius: 0.5rem; /* Rounded links */
+                background-color: rgba(255, 255, 255, 0.05); /* Subtle background for mobile links */
+                transition: background-color 0.2s ease;
+            }
+            #nav-menu ul li a:hover {
+                background-color: rgba(255, 255, 255, 0.15);
+            }
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            padding-bottom: 8px; /* Space for the underline */
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0%;
+            height: 3px;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #3498db; /* Bright blue underline */
+            border-radius: 2px;
+            transition: width 0.3s ease-in-out;
+        }
+        .nav-link.active::after,
+        .nav-link:hover::after {
+            width: 70%; /* Wider underline on active/hover */
+        }
+        .nav-link.active {
+            color: #3498db;
+            font-weight: 700;
+        }
+        .hover-zoom:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s ease-in-out;
+        }
+        .header-scrolled {
+            background-image: linear-gradient(to right, rgba(26, 82, 118, 0.9), rgba(40, 116, 166, 0.9));
+            backdrop-filter: blur(5px); /* Blur effect */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Stronger shadow when scrolled */
+            padding-top: 1rem; /* Reverted padding */
+            padding-bottom: 1rem; /* Reverted padding */
+        }
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #e0e0e0; /* Lighter track */
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Product Card Slider specific styles */
+        .product-image-wrapper {
+            display: flex;
+            width: 100%;
+            transition: transform 5.2s ease-in-out; /* Adjusted transition duration to 1.2s */
+        }
+        .product-image-slide-item {
+            flex-shrink: 0;
+            width: 100%;
+        }
+
+        /* Potensi UMKM Slider specific styles */
+        .potensi-umkm-cards-wrapper {
+            display: flex;
+            transition: transform 0.8s ease-in-out; /* Maintained 0.8s for Potensi UMKM slider */
+            gap: 2rem; /* Maintain gap between cards */
+            /* Removed width: 100% here to allow it to expand naturally */
+        }
+        .potensi-umkm-slide-item {
+            flex-shrink: 0;
+            width: 100%; /* Default for mobile */
+        }
+        @media (min-width: 768px) {
+            .potensi-umkm-slide-item {
+                width: calc(50% - 1rem); /* 2 cards, 1 gap of 2rem -> (100% - 2rem) / 2 */
+            }
+        }
+        @media (min-width: 1024px) {
+            .potensi-umkm-slide-item {
+                width: calc(33.333% - 1.3333rem); /* 3 cards, 2 gaps of 2rem -> (100% - 4rem) / 3 */
+            }
+        }
+
+        /* Styles for dragging */
+        .potensi-umkm-slider {
+            user-select: none; /* Prevent text selection during drag */
+            cursor: grab;
+        }
+        .potensi-umkm-slider.is-dragging {
+            cursor: grabbing;
+        }
+
+
+        /* Modal specific styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+            backdrop-filter: blur(3px); /* Subtle blur for background */
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 2rem;
+            border-radius: 1rem; /* Rounded corners */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); /* Stronger shadow */
+            width: 100%; /* Take full width on small screens */
+            max-width: 600px; /* Max width for larger screens */
+            max-height: 90%; /* Limit height for scrollability */
+            overflow-y: auto; /* Enable scrolling for content */
+            position: relative;
+            animation: fadeInScale 0.3s ease-out forwards; /* Animation for modal appearance */
+        }
+
+        /* Adjust modal content width for smaller screens */
+        @media (max-width: 767px) {
+            .modal-content {
+                max-width: 90%; /* Ensure it's not too wide on mobile */
+            }
+        }
+
+        .modal-close-button {
+            color: #aaa;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close-button:hover,
+        .modal-close-button:focus {
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#F8F9FA] text-gray-800">
+    <!-- Header Section -->
+    <header class="fixed top-0 left-0 right-0 bg-gradient-to-r from-[#1A5276] to-[#2874A6] p-4 flex items-center z-50 shadow-lg transition-all duration-300 ease-in-out" id="main-header">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center">
+                <img
+                    alt="Logo of Bulukumba"
+                    class="h-16 w-16 mr-4 shadow-lg transform hover:rotate-6 transition-transform duration-300"
+                    height="80"
+                    src="images/logobulkum.png"
+                    width="80"
+                />
+                <div>
+                    <h1 class="text-white text-3xl font-extrabold tracking-wider">Desa Bontomarannu</h1>
+                    <p class="text-white text-sm opacity-90">Kabupaten Bulukumba</p>
+                </div>
+            </div>
+            <!-- Hamburger Icon for Mobile -->
+            <button id="hamburger" class="md:hidden text-white text-3xl focus:outline-none p-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors duration-200">
+                <i class="fas fa-bars"></i>
+            </button>
+            <!-- Navigation Menu -->
+            <nav id="nav-menu" class="ml-auto hidden md:block">
+                <ul class="flex space-x-6 text-white">
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg
+                            group-hover:text-white transition-all duration-300"
+                            href="index.html"
+                        >
+                            Beranda
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg
+                            group-hover:text-white transition-all duration-300"
+                            href="profildesa.html"
+                        >
+                            Profil Desa
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg
+                            group-hover:text-white transition-all duration-300"
+                            href="infografis.html"
+                        >
+                            Infografis
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg 
+                            group-hover:text-white transition-all duration-300"
+                            href="umkm.html"
+                        >
+                            UMKM
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg 
+                            group-hover:text-white transition-all duration-300"
+                            href="galeri.html"
+                        >
+                            Galeri
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg 
+                            group-hover:text-white transition-all duration-300"
+                            href="about.html"
+                        >
+                            About
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+<div class="relative pt-16">
+        <img alt="Background image of a team working collaboratively" class="w-full h-[400px] object-cover" height="400" src="images/kripik ani2.jpg" width="1920"/>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#1A5276] via-[#1A5276]/70 to-transparent"></div>
+        <div class="absolute inset-0 flex items-center justify-start p-10 md:p-16">
+            <div class="text-white">
+                <div class="border-l-4 border-[#2874A6] pl-4 md:pl-6">
+                    <h1 class="text-3xl md:text-4xl text-white font-bold drop-shadow-md">Tentang UMKM</h1>
+                    <h2 class="text-4xl md:text-5xl font-extrabold leading-tight drop-shadow-lg">
+                        Desa Bontomarannu
+                    </h2>
+                </div>
+                <p class="mt-4 text-gray-100 max-w-2xl leading-relaxed">
+                    UMKM (Usaha Mikro Kecil dan Menengah) adalah usaha produktif yang dimiliki perorangan maupun badan usaha yang telah memenuhi kriteria sebagai usaha mikro. Seperti diatur dalam peraturan perundang-undangan No. 20 tahun 2008, kriteria UMKM dibedakan secara masing-masing meliputi usaha mikro, usaha kecil, dan usaha menengah. Berikut Daftar UMKM di Desa Bontomarannu.
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container mx-auto px-4 py-8 md:px-8 md:py-12 bg-white rounded-lg shadow-xl my-8">
+        <section id="potensi-umkm" class="py-8">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center mb-8">
+                    <div class="w-1.5 bg-[#2874A6] h-14 mr-4 rounded-full"></div>
+                    <div>
+                        <h2 class="text-4xl font-bold text-gray-800">Potensi Desa</h2>
+                        <p class="text-2xl text-gray-500">Desa Bontomarannu</p>
+                    </div>
+                </div>
+                <div class="relative w-full overflow-hidden potensi-umkm-slider">
+                    <div class="flex transition-transform duration-0.8s ease-in-out potensi-umkm-cards-wrapper">
+                        <div class="bg-gray-100 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 border border-gray-200 potensi-umkm-slide-item">
+                            <img src="images/coklat.JPG" alt="Perkebunan Coklat" class="w-full h-48 object-cover rounded-md mb-4 border border-gray-300" onerror="this.src='https://placehold.co/600x400/E0F2F7/1A5276?text=Kakao'">
+                            <h3 class="text-2xl font-semibold text-[#1A5276] mb-2">Kakao</h3>
+                            <p class="text-gray-700">Desa kami dikenal sebagai penghasil kakao berkualitas tinggi. Biji kakao dari perkebunan kami diolah menjadi berbagai produk coklat yang lezat dan bergizi.</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 border border-gray-200 potensi-umkm-slide-item">
+                            <img src="images/kelapa.JPG" alt="Perkebunan Kelapa" class="w-full h-48 object-cover rounded-md mb-4 border border-gray-300" onerror="this.src='https://placehold.co/600x400/E0F2F7/1A5276?text=Kelapa'">
+                            <h3 class="text-2xl font-semibold text-[#1A5276] mb-2">Kelapa</h3>
+                            <p class="text-gray-700">Perkebunan kelapa yang luas menghasilkan buah kelapa segar yang dimanfaatkan untuk berbagai olahan, mulai dari minyak kelapa, abon hingga kerajinan tangan.</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 border border-gray-200 potensi-umkm-slide-item">
+                            <img src="images/sawah.JPG" alt="Sawah Padi" class="w-full h-48 object-cover rounded-md mb-4 border border-gray-300" onerror="this.src='https://placehold.co/600x400/E0F2F7/1A5276?text=Padi'">
+                            <h3 class="text-2xl font-semibold text-[#1A5276] mb-2">Padi</h3>
+                            <p class="text-gray-700">Sawah-sawah di desa kami menghasilkan padi organik dengan kualitas terbaik, menjadi sumber pangan utama bagi masyarakat dan dikelola secara tradisional.</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 border border-gray-200 potensi-umkm-slide-item">
+                            <img src="images/jagung2.JPG" alt="Perkebunan Jagung" class="w-full h-48 object-cover rounded-md mb-4 border border-gray-300" onerror="this.src='https://placehold.co/600x400/E0F2F7/1A5276?text=Jagung'">
+                            <h3 class="text-2xl font-semibold text-[#1A5276] mb-2">Jagung</h3>
+                            <p class="text-gray-700">Warga desa membudidayakan jagung sebagai tanaman unggulan, dengan hasil panen yang berkualitas dan berkontribusi pada penguatan ekonomi masyarakat</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 border border-gray-200 potensi-umkm-slide-item">
+                            <img src="images/pisang.jpg" alt="Perkebunan Pisang" class="w-full h-48 object-cover rounded-md mb-4 border border-gray-300">
+                            <h3 class="text-2xl font-semibold text-[#1A5276] mb-2">Pisang</h3>
+                            <p class="text-gray-700">Selain jagung, desa kami juga menghasilkan pisang dari kebun-kebun warga yang tumbuh alami. Pisang ini diolah menjadi berbagai produk seperti keripik dan bahan pangan lainnya, serta menjadi komoditas bernilai ekonomi bagi warga.</p>
+                        </div>
+                    </div>
+                    <button class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white text-[#1A5276] p-2 rounded-full shadow-md hover:bg-gray-200 focus:outline-none transition-colors prev-potensi-umkm-slide">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white text-[#1A5276] p-2 rounded-full shadow-md hover:bg-gray-200 focus:outline-none transition-colors next-potensi-umkm-slide">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="galeri-umkm" class="py-8">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center mb-8">
+                    <div class="w-1.5 bg-[#2874A6] h-14 mr-4 rounded-full"></div>
+                    <div>
+                        <h2 class="text-4xl font-bold text-gray-800">Galeri UMKM & Produk Lokal</h2>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-gray-100 rounded-lg shadow-lg overflow-hidden border border-gray-200">
+                        <div class="relative w-full overflow-hidden product-card-image-slider">
+                            <div class="flex transition-transform duration-1.2s ease-in-out product-image-wrapper">
+                                <img src="images/kripik ani.jpg" alt="Keripik Pisang Bu Ani 1" class="w-full h-56 object-cover product-image-slide-item" onerror="this.src='https://placehold.co/600x400/E0F2F7/1A5276?text=Keripik+Bu+Ani+1'">
+                                <img src="images/kripik ani2.jpg" alt="Keripik Pisang Bu Ani 2" class="w-full h-56 object-cover product-image-slide-item" onerror="this.src='https://placehold.co/600x400/E0F2F7/1A5276?text=Keripik+Bu+Ani+2'">
+                                <img src="images/kripik ani3.jpg" alt="Keripik Pisang Bu Ani 3" class="w-full h-56 object-cover product-image-slide-item" onerror="this.src='https://placehold.co/600x400/E0F2F7/1A5276?text=Keripik+Bu+Ani+3'">
+                            </div>
+                            <button class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white text-[#1A5276] p-2 rounded-full shadow-md hover:bg-gray-200 focus:outline-none transition-colors prev-product-card-slide">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white text-[#1A5276] p-2 rounded-full shadow-md hover:bg-gray-200 focus:outline-none transition-colors next-product-card-slide">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="text-2xl font-bold text-[#1A5276] mb-2">Keripik Pisang Bu Ani</h4>
+                            <p class="text-gray-700 mb-3">Keripik pisang renyah dengan cita rasa khas, dibuat dari pisang pilihan dan diolah secara tradisional oleh Ibu Ani di dapur rumah desa. Camilan otentik yang menghadirkan rasa manis alami dan tekstur garing dalam setiap gigitan.</p>
+                            <p class="text-xl font-semibold text-[#2874A6] mb-3">Harga: Mulai dari Rp 1.000 - Rp 12.000</p>
+                            <div class="flex items-center space-x-3">
+                                <a href="https://wa.me/6287762029331" target="_blank" class="text-green-600 hover:text-green-800 transition-colors flex items-center space-x-1">
+                                    <i class="fab fa-whatsapp"></i> <span>WA Pengrajin</span>
+                                </a>
+                                <a href="https://www.google.com/maps/place/Syamsul+Meubel+(Plafon)/@-5.4541447,120.3550974,17z/data=!3m1!4b1!4m6!3m5!1s0x2dbc0fb32c6a0a9b:0xd97418e77ea78eec!8m2!3d-5.45415!4d120.3576777!16s%2Fg%2F11xnl28zrm?entry=ttu&g_ep=EgoyMDI1MDcyMy4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="text-pink-600 hover:text-pink-800 transition-colors flex items-center space-x-1">
+                                    <i class="fas fa-location-crosshairs"></i> <span>Info Lanjut</span>
+                                </a>
+                                <button class="detail-button text-[#3E94D0] hover:text-[#1A5276] transition-colors flex items-center space-x-1" data-product-id="keripik-bu-ani">
+                                    <i class="fas fa-info-circle"></i> <span>Detail</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg shadow-lg overflow-hidden border border-gray-200">
+                        <div class="relative w-full overflow-hidden product-card-image-slider">
+                            <div class="flex transition-transform duration-1.2s ease-in-out product-image-wrapper">
+                                <img src="images/raodah_kacang_sebiji.jpg" alt="Raodah Kripik" class="w-full h-56 object-cover product-image-slide-item">
+                                <img src="images/raodah_burasa.jpg" alt="Raodah Gogos" class="w-full h-56 object-cover product-image-slide-item">
+                                <img src="images/raodah_keripik.jpg" alt="Raodah Burasa" class="w-full h-56 object-image-slide-item">
+                            </div>
+                            <button class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white text-[#1A5276] p-2 rounded-full shadow-md hover:bg-gray-200 focus:outline-none transition-colors prev-product-card-slide">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white text-[#1A5276] p-2 rounded-full shadow-md hover:bg-gray-200 focus:outline-none transition-colors next-product-card-slide">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="text-2xl font-bold text-[#1A5276] mb-2">Raodah</h4>
+                            <p class="text-gray-700 mb-3">Mengusung rasa tradisional, Raodah menghadirkan aneka makanan olahan seperti kripik pisang, gogos, burasa, dan kacang sebiji yang cocok untuk camilan sehari-hari, hajatan maupun oleh-oleh.</p>
+                            <p class="text-xl font-semibold text-[#2874A6] mb-3">Harga: Mulai dari Rp 10.000</p>
+                            <div class="flex items-center space-x-3">
+                                <a href="https://wa.me/6285757750264" target="_blank" class="text-green-600 hover:text-green-800 transition-colors flex items-center space-x-1">
+                                    <i class="fab fa-whatsapp"></i> <span>WA Pengrajin</span>
+                                </a>
+                                <a href="https://www.google.com/maps/place/Raodah/@-5.4541789,120.3563396,963m/data=!3m2!1e3!4b1!4m6!3m5!1s0x2dbc0f777d741f6f:0xf24aa762ca5be710!8m2!3d-5.4541842!4d120.3589199!16s%2Fg%2F11ygdbp7pf?entry=ttu&g_ep=EgoyMDI1MDcyMy4wIKXMDSoASAFQAw%3D%3D" 
+                                target="_blank" class="text-pink-600 hover:text-pink-800 transition-colors flex items-center space-x-1">
+                                    <i class="fas fa-location-crosshairs"></i> <span>Info Lanjut</span>
+                                </a>
+                                <button class="detail-button text-[#3E94D0] hover:text-[#1A5276] transition-colors flex items-center space-x-1" data-product-id="raodah">
+                                    <i class="fas fa-info-circle"></i> <span>Detail</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg shadow-lg overflow-hidden border border-gray-200">
+                        <div class="relative w-full overflow-hidden product-card-image-slider">
+                            <div class="flex transition-transform duration-1.2s ease-in-out product-image-wrapper">
+                                <img src="images/plafon_kalacibor.jpg" alt="Plafon Ruang Tamu" class="w-full h-56 object-cover product-image-slide-item">
+                                <img src="images/plafon_pvc.jpg" alt="Plafon Kamar Tidur" class="w-full h-56 object-cover product-image-slide-item">
+                                <video class="w-full h-56 object-cover product-image-slide-item" autoplay muted loop playsinline>
+                                    <source src="images/plafon.mp4" type="video/mp4">
+                                    Browser Anda tidak mendukung tag video.
+                                </video>
+                            </div>
+                            <button class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white text-[#1A5276] p-2 rounded-full shadow-md hover:bg-gray-200 focus:outline-none transition-colors prev-product-card-slide">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white text-[#1A5276] p-2 rounded-full shadow-md hover:bg-gray-200 focus:outline-none transition-colors next-product-card-slide">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="text-2xl font-bold text-[#1A5276] mb-2">Syamsul Meubel (Plafon)</h4>
+                            <p class="text-gray-700 mb-3">Syamsul Meubel melayani pemasangan dan pembuatan plafon untuk rumah dan bangunan komersial. Mengutamakan kualitas bahan, kerapihan, dan ketahanan. Dikerjakan oleh tenaga berpengalaman di bidang interior.</p>
+                            <p class="text-xl font-semibold text-[#2874A6] mb-3">Harga: Harga bervariasi</p>
+                            <div class="flex items-center space-x-3">
+                                <a href="https://wa.me/6285757750264" target="_blank" class="text-green-600 hover:text-green-800 transition-colors flex items-center space-x-1">
+                                    <i class="fab fa-whatsapp"></i> <span>WA Pengrajin</span>
+                                </a>
+                                <a href="https://www.google.com/maps/place/Syamsul+Meubel+(Plafon)/@-5.4541447,120.3550974,17z/data=!3m1!4b1!4m6!3m5!1s0x2dbc0fb32c6a0a9b:0xd97418e77ea78eec!8m2!3d-5.45415!4d120.3576777!16s%2Fg%2F11xnl28zrm?entry=ttu&g_ep=EgoyMDI1MDcyMy4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="text-pink-600 hover:text-pink-800 transition-colors flex items-center space-x-1">
+                                    <i class="fas fa-location-crosshairs"></i> <span>Info Lanjut</span>
+                                </a>
+                                <button class="detail-button text-[#3E94D0] hover:text-[#1A5276] transition-colors flex items-center space-x-1" data-product-id="syamsul-meubel">
+                                    <i class="fas fa-info-circle"></i> <span>Detail</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="testimoni" class="py-8">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center mb-8">
+                    <div class="w-1.5 bg-[#2874A6] h-14 mr-4 rounded-full"></div>
+                    <div>
+                        <h2 class="text-4xl font-bold text-gray-800">Testimoni Pelaku Usaha Lokal</h2>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-gray-100 p-6 rounded-lg shadow-md border border-gray-200">
+                        <p class="italic text-gray-700 mb-4">"Saya sudah menjual keripik pisang selama belasan tahun, saya yang kerja sendiri, dari menggoreng, packing dan mengantar pesanan. Bisa dibilang saya satu satunya penjual keripik pisang yg aktif di Bontomarannu ini. Saya menemukan rezeki saya karena potensi pisang di desa ini sangat melimpah Karena potensi pisang yang melimpah."</p>
+                        <p class="font-bold text-[#1A5276]">- Ibu Ani, Penjual Keripik Pisang</p>
+                    </div>
+                    <div class="bg-gray-100 p-6 rounded-lg shadow-md border border-gray-200">
+                        <p class="italic text-gray-700 mb-4">""</p>
+                        <p class="font-bold text-[#1A5276]">- Ibu Asmawati dan suami, Pemilik Toko Raodah dan Syamsul Maubel (Plafon)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="kontak-umkm" class="py-8">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center mb-8">
+                    <div class="w-1.5 bg-[#2874A6] h-14 mr-4 rounded-full"></div>
+                    <div>
+                        <h2 class="text-4xl font-bold text-gray-800">Kontak Desa</h2>
+                        <p class="text-2xl text-gray-500">Hubungi kami untuk informasi lebih lanjut tentang produk UMKM Desa Bontomarannu.</p>
+                    </div>
+                </div>
+                <div class="bg-gray-100 p-6 rounded-lg shadow-md border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-[#1A5276] mb-2">Pusat Informasi Desa</h3>
+                        <p class="text-gray-700 mb-2 flex items-center"><i class="fas fa-phone mr-2 text-[#2874A6]"></i> Telepon: (0411) 123-456</p>
+                        <p class="text-gray-700 mb-2 flex items-center"><i class="fab fa-whatsapp mr-2 text-green-600"></i> WhatsApp: <a href="https://wa.me/6285395602749" target="_blank" class="text-green-600 hover:underline">+62853-9560-2749 (Kepala Desa)</a></p>
+                        <p class="text-gray-700 mb-2 flex items-center"><i class="fas fa-envelope mr-2 text-[#2874A6]"></i> Email: <a href="mailto:umkm.Bontomarannu@email.com" class="text-[#2874A6] hover:underline">desa.bontomarannu@email.com</a></p>
+                        <p class="text-gray-700 flex items-center"><i class="fas fa-map-marker-alt mr-2 text-[#2874A6]"></i> Alamat: <a href="https://maps.app.goo.gl/yRyVm4aCpHSQe7Nv7" class="text-[#2874A6] hover:underline">Kantor Desa Bontomarannu, Kecamatan Bontotiro, Kabupaten Bulukumba</a></p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-[#1A5276] mb-2">Media Sosial Resmi Desa</h3>
+                        <p class="text-gray-700 mb-2 flex items-center"><i class="fab fa-facebook-f mr-2 text-blue-600"></i> Facebook: <a href="https://www.facebook.com/DesaBontomarannuOfficial" target="_blank" class="text-blue-600 hover:underline">Desa Bontomarannu Official</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="bg-[#1F2937] text-white px-4 py-8 md:px-8 md:py-10 mt-12 shadow-inner">
+        <div class="container mx-auto">
+            <div class="flex flex-col items-center pb-6 border-b border-gray-700 mb-6">
+                <div class="text-center">
+                    <h1 class="text-xl md:text-2xl text-white font-bold">Desa Bontomarannu</h1>
+                    <p class="text-sm text-gray-300 mt-1">Kec. Bontoramba, Kab. Bulukumba, Sulawesi Selatan</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 text-justify">
+                <div class="space-y-3">
+                    <h2 class="text-lg text-white font-bold flex items-center"><i class="fas fa-globe mr-2 text-[#3498DB]"></i>Website Profil Desa</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Website profil Desa merupakan situs web yang memuat informasi dasar mengenai desa, sejarah, visi dan misi desa, sampai dengan peta wilayah desa.
+                    </p>
+                </div>
+                <div class="space-y-3">
+                    <h2 class="text-lg text-white font-bold flex items-center"><i class="fas fa-code mr-2 text-[#3498DB]"></i>Developer</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Website ini dibuat oleh Khalizatul Jannah, Mahasiswa KKN Universitas Hasanuddin Gelombang 114 Desa Bontomarannu pada Juli-Agustus 2025.
+                    </p>
+                </div>
+                <div class="space-y-3">
+                    <h2 class="text-lg text-white font-bold flex items-center"><i class="fas fa-bullseye mr-2 text-[#3498DB]"></i>Harapan & Tujuan</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Situs web profil ini dibuat untuk tujuan promosi dan publisitas Desa Bontomarannu agar lebih dikenal oleh khalayak ramai baik di dalam maupun di luar Desa Bontomarannu.
+                    </p>
+                </div>
+            </div>
+            <div class="text-center mt-10 border-t border-gray-700 pt-6">
+                <p class="text-xs text-gray-400">
+                    © 2025 Desa Bontomarannu - All rights reserved
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="productDetailModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button" id="closeModalBtn">×</span>
+            <h3 id="modalProductName" class="text-3xl font-bold text-[#1A5276] mb-4"></h3>
+            <p id="modalProductDescription" class="text-gray-700 mb-6"></p>
+            <div id="modalProductItems" class="space-y-4">
+                </div>
+            </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('nav-menu');
+            const header = document.getElementById('main-header');
+
+            // Product data for the modal
+            const umkmProducts = [
+                {
+                    id: 'keripik-bu-ani',
+                    name: 'List Harga Toko Keripik Pisang Bu Ani',
+                    items: [
+                        { itemName: 'Keripik Pisang (Kecil)', itemRasa1: 'Original', itemRasa2: 'Balado', itemPrice: 'Rp 1.000', itemImage: 'images/kripik_ani_kecil.jpg' },
+                        { itemName: 'Keripik Pisang (Sedang)', itemRasa1: 'Original', itemRasa2: 'Balado', itemPrice: 'Rp 5.000', itemImage: 'images/kripik_ani_besar.jpg' },
+                        { itemName: 'Keripik Pisang Original (Besar)', itemRasa1: 'Original', itemRasa2: 'Balado', itemPrice: 'Rp 10.000', itemImage: 'images/kripik ani3.jpg' }
+                    ]
+                },
+                {
+                    id: 'raodah',
+                    name: 'List Harga Toko Raodah',
+                    items: [
+                        { itemName: 'Kripik Pisang Raodah', itemRasa1: 'Balado', itemRasa2:'Original', itemPrice: 'Rp 10.000 / bungkus', itemImage: 'images/raodah_keripik.jpg' },
+                        { itemName: 'Gogos', itemPrice: 'Rp 10.000 / 4 pcs', itemImage: 'images/raodah_gogos.jpg' },
+                        { itemName: 'Burasa', itemPrice: 'Rp 10.000/ 5 pcs', itemImage: 'images/raodah_burasa.jpg' },
+                        { itemName: 'Kerupuk Jintan', itemPrice: 'Rp 10.000/ bungkus', itemImage: 'images/raodah_jintan.jpg' },
+                        { itemName: 'Kacang Sebiji', itemPrice: 'Rp 10.000 / bungkus', itemImage: 'images/raodah_kacang_sebiji.jpg' }
+                    ]
+                },
+                {
+                    id: 'syamsul-meubel',
+                    name: 'List Harga Toko Syamsul Meubel (Plafon)',
+                    items: [
+                        { itemName: 'Plafon Kalacibor', itemPrice: 'Mulai dari Rp 350.000 / meter', itemImage: 'images/plafon_kalacibor.jpg' },
+                        { itemName: 'Plafon PVC', itemPrice: 'Mulai dari Rp 250.000 / meter', itemImage: 'images/plafon_pvc.jpg' }
+                    ]
+                }
+            ];
+
+            // Toggle mobile navigation
+            hamburger.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!hamburger.contains(event.target) && !navMenu.contains(event.target) && navMenu.classList.contains('active')) {
+                    navMenu.classList.remove('active');
+                }
+            });
+
+            // Set active navigation link based on current page
+            const currentLocation = location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                // Add click listener to ensure active state is set immediately
+                link.addEventListener('click', function(event) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    // If mobile menu is open, close it after clicking a link
+                    if (navMenu.classList.contains('active') && window.innerWidth <= 767) { // Changed breakpoint to 767px
+                        setTimeout(() => navMenu.classList.remove('active'), 300); // Small delay for smooth transition
+                    }
+                });
+
+                // Set active class on page load
+                if (link.getAttribute('href') === currentLocation || (currentLocation === '' && link.getAttribute('href') === 'index.html')) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Header transparency on scroll
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 80) { // Adjusted scroll threshold for consistency
+                    header.classList.add('header-scrolled');
+                } else {
+                    header.classList.remove('header-scrolled');
+                }
+            });
+
+            // Product Card Image Sliders (existing functionality)
+            const productSliders = document.querySelectorAll('.product-card-image-slider');
+
+            productSliders.forEach(slider => {
+                const imageWrapper = slider.querySelector('.product-image-wrapper');
+                const images = slider.querySelectorAll('.product-image-slide-item');
+                const prevBtn = slider.querySelector('.prev-product-card-slide');
+                const nextBtn = slider.querySelector('.next-product-card-slide');
+                let currentIndex = 0;
+
+                function updateSlider() {
+                    imageWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+                }
+
+                prevBtn.addEventListener('click', () => {
+                    currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
+                    updateSlider();
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    currentIndex = (currentIndex === images.length - 1) ? 0 : currentIndex + 1;
+                    updateSlider();
+                });
+            });
+
+            // Potensi UMKM Slider (NEW functionality)
+            const potensiUmkmSlider = document.querySelector('.potensi-umkm-slider');
+            if (potensiUmkmSlider) { // Check if the slider exists on the page
+                const cardsWrapper = potensiUmkmSlider.querySelector('.potensi-umkm-cards-wrapper');
+                const cards = Array.from(potensiUmkmSlider.querySelectorAll('.potensi-umkm-slide-item')); // Convert NodeList to Array
+                const prevBtn = potensiUmkmSlider.querySelector('.prev-potensi-umkm-slide');
+                const nextBtn = potensiUmkmSlider.querySelector('.next-potensi-umkm-slide');
+                let potensiCurrentIndex = 0; // This will be the index of the first visible card
+                let cardsPerPage = 1; // Default for mobile
+
+                // Function to determine cards per page based on screen width
+                function updateCardsPerPage() {
+                    if (window.innerWidth >= 1024) { // Large screens
+                        cardsPerPage = 3;
+                    } else if (window.innerWidth >= 768) { // Medium screens
+                        cardsPerPage = 2;
+                    } else { // Small screens
+                        cardsPerPage = 1;
+                    }
+                    // Ensure the current index is valid after resize
+                    const maxPossibleIndex = Math.max(0, cards.length - cardsPerPage);
+                    if (potensiCurrentIndex > maxPossibleIndex) {
+                        potensiCurrentIndex = maxPossibleIndex;
+                    }
+                    updatePotensiSlider();
+                }
+
+                function updatePotensiSlider() {
+                    const sliderWidth = potensiUmkmSlider.offsetWidth;
+                    const cardsWrapperComputedStyle = window.getComputedStyle(cardsWrapper);
+                    const gap = parseFloat(cardsWrapperComputedStyle.gap);
+
+                    let targetTranslateX = 0;
+                    for (let i = 0; i < potensiCurrentIndex; i++) {
+                        if (cards[i]) { // Ensure card exists
+                            targetTranslateX += cards[i].offsetWidth + gap;
+                        }
+                    }
+
+                    // Calculate the maximum scrollable distance to prevent empty space
+                    let totalContentWidth = 0;
+                    cards.forEach((card, index) => {
+                        totalContentWidth += card.offsetWidth;
+                        if (index < cards.length - 1) { // Add gap for all but the last card
+                            totalContentWidth += gap;
+                        }
+                    });
+
+                    const maxScrollableDistance = Math.max(0, totalContentWidth - sliderWidth);
+
+                    let finalTranslateX = -targetTranslateX;
+                    // Clamp the final translation to ensure no empty space at the end or left
+                    if (Math.abs(finalTranslateX) > maxScrollableDistance) {
+                        finalTranslateX = -maxScrollableDistance;
+                    }
+                    if (finalTranslateX > 0) {
+                        finalTranslateX = 0;
+                    }
+
+                    cardsWrapper.style.transform = `translateX(${finalTranslateX}px)`;
+
+                    // Update button state (optional, but good UX)
+                    prevBtn.disabled = finalTranslateX === 0;
+                    nextBtn.disabled = Math.abs(finalTranslateX) >= maxScrollableDistance;
+                }
+
+                prevBtn.addEventListener('click', () => {
+                    potensiCurrentIndex = Math.max(0, potensiCurrentIndex - cardsPerPage);
+                    updatePotensiSlider();
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    const maxPossibleIndex = Math.max(0, cards.length - cardsPerPage);
+                    potensiCurrentIndex = Math.min(maxPossibleIndex, potensiCurrentIndex + cardsPerPage);
+                    updatePotensiSlider();
+                });
+
+                // --- Mouse Dragging Functionality ---
+                let isDragging = false;
+                let startPosX = 0;
+                let currentTranslateX = 0; // This will hold the current X position during drag
+                let startTranslateX = 0; // The translateX value when drag started
+
+                potensiUmkmSlider.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    startPosX = e.clientX;
+                    startTranslateX = parseFloat(getComputedStyle(cardsWrapper).transform.split(',')[4] || 0);
+                    cardsWrapper.style.transition = 'none'; // Disable transition during drag
+                    potensiUmkmSlider.classList.add('is-dragging'); // Add grabbing cursor
+                    e.preventDefault(); // Prevent default browser drag behavior (e.g., image dragging)
+                });
+
+                potensiUmkmSlider.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    const deltaX = e.clientX - startPosX;
+                    let newTranslateX = startTranslateX + deltaX;
+
+                    const sliderWidth = potensiUmkmSlider.offsetWidth;
+                    const cardsWrapperComputedStyle = window.getComputedStyle(cardsWrapper);
+                    const gap = parseFloat(cardsWrapperComputedStyle.gap);
+
+                    let totalContentWidth = 0;
+                    cards.forEach((card, index) => {
+                        totalContentWidth += card.offsetWidth;
+                        if (index < cards.length - 1) {
+                            totalContentWidth += gap;
+                        }
+                    });
+                    const maxScrollableDistance = Math.max(0, totalContentWidth - sliderWidth);
+
+                    // Clamp the newTranslateX
+                    if (newTranslateX > 0) { // Cannot scroll left past the beginning
+                        newTranslateX = 0;
+                    } else if (Math.abs(newTranslateX) > maxScrollableDistance) { // Cannot scroll right past the end
+                        newTranslateX = -maxScrollableDistance;
+                    }
+
+                    currentTranslateX = newTranslateX;
+                    cardsWrapper.style.transform = `translateX(${currentTranslateX}px)`;
+                });
+
+                potensiUmkmSlider.addEventListener('mouseup', () => {
+                    if (!isDragging) return; // Ensure it was actually dragging
+                    isDragging = false;
+                    cardsWrapper.style.transition = 'transform 0.8s ease-in-out'; // Re-enable transition
+                    potensiUmkmSlider.classList.remove('is-dragging'); // Remove grabbing cursor
+
+                    // Snap logic: Find the closest `potensiCurrentIndex` that aligns with the current `currentTranslateX`
+                    // while respecting the "no empty space" rule.
+                    let closestIndex = 0;
+                    let minDistance = Infinity;
+                    
+                    for (let i = 0; i < cards.length; i++) {
+                        // Calculate the translateX if 'i' were the starting index
+                        let hypotheticalTranslateXForIndex = 0;
+                        for (let j = 0; j < i; j++) {
+                            if (cards[j]) {
+                                hypotheticalTranslateXForIndex += cards[j].offsetWidth + gap;
+                            }
+                        }
+                        hypotheticalTranslateXForIndex = -hypotheticalTranslateXForIndex; // Convert to negative for translateX
+
+                        // Apply the same clamping logic as in updatePotensiSlider
+                        const sliderWidth = potensiUmkmSlider.offsetWidth;
+                        let totalContentWidth = 0;
+                        cards.forEach((card, idx) => {
+                            totalContentWidth += card.offsetWidth;
+                            if (idx < cards.length - 1) {
+                                totalContentWidth += gap;
+                            }
+                        });
+                        const maxScrollableDistance = Math.max(0, totalContentWidth - sliderWidth);
+
+                        let clampedHypotheticalTranslateX = hypotheticalTranslateXForIndex;
+                        if (Math.abs(clampedHypotheticalTranslateX) > maxScrollableDistance) {
+                            clampedHypotheticalTranslateX = -maxScrollableDistance;
+                        }
+                        if (clampedHypotheticalTranslateX > 0) {
+                            clampedHypotheticalTranslateX = 0;
+                        }
+
+                        // Calculate distance to the current drag position
+                        const distance = Math.abs(currentTranslateX - clampedHypotheticalTranslateX);
+
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestIndex = i;
+                        }
+                    }
+
+                    potensiCurrentIndex = closestIndex;
+                    updatePotensiSlider(); // This will apply the snap with smooth transition
+                });
+
+                potensiUmkmSlider.addEventListener('mouseleave', () => {
+                    // If mouse leaves while dragging, treat as mouseup
+                    if (isDragging) {
+                        potensiUmkmSlider.dispatchEvent(new MouseEvent('mouseup')); // Trigger mouseup to snap
+                    }
+                });
+
+                // Initial setup and update on resize
+                window.addEventListener('resize', updateCardsPerPage);
+                updateCardsPerPage(); // Call on load to set initial state
+            }
+
+
+            // Modal functionality
+            const productDetailModal = document.getElementById('productDetailModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const modalProductName = document.getElementById('modalProductName');
+            const modalProductDescription = document.getElementById('modalProductDescription');
+            const modalProductItems = document.getElementById('modalProductItems');
+            // Removed references to modalWhatsappLink and modalLocationLink
+
+            const detailButtons = document.querySelectorAll('.detail-button');
+
+            // Function to open the modal
+            function openModal(productId) {
+                const product = umkmProducts.find(p => p.id === productId);
+                if (product) {
+                    modalProductName.textContent = product.name;
+                    // Note: product.description is not available in your umkmProducts data,
+                    // so this line will not display anything unless you add descriptions to your data.
+                    modalProductDescription.textContent = product.description || ''; 
+                    
+                    // Clear previous items and populate with new ones
+                    modalProductItems.innerHTML = '';
+                    product.items.forEach(item => {
+                        const itemCard = document.createElement('div');
+                        itemCard.className = 'bg-white p-4 rounded-lg shadow-md border border-gray-200 flex items-center space-x-4 w-full';
+                        
+                        // Conditionally add itemRasa1 and itemRasa2 if they exist
+                        const rasa1Html = item.itemRasa1 ? `<p class="text-md text-[#2874A6] font-bold">${item.itemRasa1}</p>` : '';
+                        const rasa2Html = item.itemRasa2 ? `<p class="text-md text-[#2874A6] font-bold">${item.itemRasa2}</p>` : '';
+
+                        itemCard.innerHTML = `
+                            <img src="${item.itemImage}" alt="${item.itemName}" class="w-24 h-24 object-cover rounded-md border border-gray-300">
+                            <div>
+                                <h5 class="text-lg font-semibold text-[#1A5276] mb-1">${item.itemName}</h5>
+                                ${rasa1Html}
+                                ${rasa2Html}
+                                <p class="text-md text-[#2874A6] font-bold">${item.itemPrice}</p>
+                            </div>
+                        `;
+                        modalProductItems.appendChild(itemCard);
+                    });
+
+                    productDetailModal.style.display = 'flex'; // Use flex to center
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling background
+                }
+            }
+
+            // Function to close the modal
+            function closeModal() {
+                productDetailModal.style.display = 'none';
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+
+            // Event listeners for detail buttons
+            detailButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    openModal(productId);
+                });
+            });
+
+            // Event listener for close button
+            closeModalBtn.addEventListener('click', closeModal);
+
+            // Close modal when clicking outside of modal content
+            window.addEventListener('click', function(event) {
+                if (event.target === productDetailModal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

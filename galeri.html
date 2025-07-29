@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Desa Bontomarannu - Galeri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts: Poppins for body, Montserrat for headings -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333; /* Darker default text for better contrast */
+            line-height: 1.6; /* Improved readability */
+            overflow-x: hidden; /* Prevent horizontal scroll on animations */
+            background-color: #F0F2F5; /* Consistent background with Canvas */
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
+        @media (max-width: 767px) {
+            #nav-menu {
+                display: none; /* Hidden by default on mobile */
+                position: absolute;
+                top: 100%; /* Position below the header */
+                left: 0;
+                right: 0;
+                background-color: #1a5276; /* Dark blue background for mobile menu */
+                padding: 1rem;
+                z-index: 1000;
+                border-radius: 0 0 0.75rem 0.75rem; /* Rounded bottom corners */
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow from Canvas */
+                animation: slideDown 0.3s ease-out forwards; /* Slide down animation */
+            }
+            #nav-menu.active {
+                display: block; /* Show when active */
+            }
+            #nav-menu ul {
+                flex-direction: column; /* Stack items vertically */
+                gap: 0.75rem; /* Spacing between menu items */
+            }
+            #nav-menu ul li {
+                width: 100%; /* Full width for each item */
+            }
+            #nav-menu ul li a {
+                display: block;
+                padding: 0.75rem 1rem;
+                text-align: center;
+                border-radius: 0.5rem; /* Rounded links */
+                background-color: rgba(255, 255, 255, 0.05); /* Subtle background for mobile links */
+                transition: background-color 0.2s ease;
+            }
+            #nav-menu ul li a:hover {
+                background-color: rgba(255, 255, 255, 0.15);
+            }
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            padding-bottom: 8px; /* Space for the underline */
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0%;
+            height: 3px;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #3498db; /* Bright blue underline */
+            border-radius: 2px;
+            transition: width 0.3s ease-in-out;
+        }
+        .nav-link.active::after,
+        .nav-link:hover::after {
+            width: 70%; /* Wider underline on active/hover */
+        }
+        .nav-link.active {
+            color: #3498db;
+            font-weight: 700;
+        }
+        .header-scrolled {
+            background-image: linear-gradient(to right, rgba(26, 82, 118, 0.9), rgba(40, 116, 166, 0.9));
+            backdrop-filter: blur(5px); /* Blur effect */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Stronger shadow when scrolled */
+            padding-top: 1rem; /* Reverted padding */
+            padding-bottom: 1rem; /* Reverted padding */
+        }
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #e0e0e0; /* Lighter track */
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Product Card Slider specific styles (copied for consistency) */
+        .product-image-wrapper {
+            display: flex;
+            width: 100%;
+            transition: transform 1.2s ease-in-out;
+        }
+        .product-image-slide-item {
+            flex-shrink: 0;
+            width: 100%;
+        }
+
+        /* Potensi UMKM Slider specific styles (copied for consistency) */
+        .potensi-umkm-cards-wrapper {
+            display: flex;
+            transition: transform 0.8s ease-in-out;
+            gap: 2rem;
+        }
+        .potensi-umkm-slide-item {
+            flex-shrink: 0;
+            width: 100%;
+        }
+        @media (min-width: 768px) {
+            .potensi-umkm-slide-item {
+                width: calc(50% - 1rem);
+            }
+        }
+        @media (min-width: 1024px) {
+            .potensi-umkm-slide-item {
+                width: calc(33.333% - 1.3333rem);
+            }
+        }
+
+        /* Styles for dragging (copied for consistency) */
+        .potensi-umkm-slider {
+            user-select: none;
+            cursor: grab;
+        }
+        .potensi-umkm-slider.is-dragging {
+            cursor: grabbing;
+        }
+
+
+        /* Modal specific styles (copied for consistency) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(3px);
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+            animation: fadeInScale 0.3s ease-out forwards;
+        }
+
+        /* Adjust modal content width for smaller screens (copied for consistency) */
+        @media (max-width: 767px) {
+            .modal-content {
+                max-width: 90%;
+            }
+        }
+
+        .modal-close-button {
+            color: #aaa;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close-button:hover,
+        .modal-close-button:focus {
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* New styles for image gallery and image modal */
+        .gallery-item img {
+            cursor: zoom-in; /* Indicate clickable image */
+            /* Removed transition and transform for hover zoom */
+        }
+        /* Removed .gallery-item img:hover as requested */
+
+        .image-modal-content {
+            background-color: transparent; /* No background for image modal */
+            padding: 0; /* No padding */
+            border-radius: 0; /* No border-radius */
+            box-shadow: none; /* No shadow */
+            max-width: 90vw; /* Max width relative to viewport */
+            max-height: 90vh; /* Max height relative to viewport */
+            display: flex; /* Use flex to center image */
+            justify-content: center;
+            align-items: center;
+            position: relative; /* For close button positioning */
+            overflow: hidden; /* Hide scrollbars if image is too big */
+            /* Added for 4:3 aspect ratio */
+            aspect-ratio: 4 / 3; 
+        }
+
+        .image-modal-content img {
+            width: 100%; /* Ensure image fills the container */
+            height: 100%; /* Ensure image fills the container */
+            max-width: 100%; /* Ensure image fits within modal content */
+            max-height: 100%; /* Ensure image fits within modal content */
+            object-fit: contain; /* Contain the image within its bounds, maintaining aspect ratio */
+            border-radius: 0.5rem; /* Slightly rounded corners for the image itself */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Shadow for the image */
+        }
+
+        .image-modal-close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white; /* White close button for dark background */
+            font-size: 2.5rem; /* Larger close button */
+            font-weight: bold;
+            cursor: pointer;
+            text-shadow: 0 0 5px rgba(0,0,0,0.8); /* Shadow for visibility */
+            z-index: 1001; /* Above the image */
+            transition: color 0.3s ease;
+        }
+
+        .image-modal-close-button:hover {
+            color: #ccc;
+        }
+    </style>
+</head>
+<body class="bg-[#F8F9FA] text-gray-800">
+    <!-- Header Section -->
+    <header class="fixed top-0 left-0 right-0 bg-gradient-to-r from-[#1A5276] to-[#2874A6] p-4 flex items-center z-50 shadow-lg transition-all duration-300 ease-in-out" id="main-header">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center">
+                <img
+                    alt="Logo of Bulukumba"
+                    class="h-16 w-16 mr-4 shadow-lg transform hover:rotate-6 transition-transform duration-300"
+                    height="80"
+                    src="images/logobulkum.png"
+                    width="80"
+                />
+                <div>
+                    <h1 class="text-white text-3xl font-extrabold tracking-wider">Desa Bontomarannu</h1>
+                    <p class="text-white text-sm opacity-90">Kabupaten Bulukumba</p>
+                </div>
+            </div>
+            <!-- Hamburger Icon for Mobile -->
+            <button id="hamburger" class="md:hidden text-white text-3xl focus:outline-none p-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors duration-200">
+                <i class="fas fa-bars"></i>
+            </button>
+            <!-- Navigation Menu -->
+            <nav id="nav-menu" class="ml-auto hidden md:block">
+                <ul class="flex space-x-6 text-white">
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg
+                            group-hover:text-white transition-all duration-300"
+                            href="index.html"
+                        >
+                            Beranda
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg
+                            group-hover:text-white transition-all duration-300"
+                            href="profildesa.html"
+                        >
+                            Profil Desa
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg
+                            group-hover:text-white transition-all duration-300"
+                            href="infografis.html"
+                        >
+                            Infografis
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg 
+                            group-hover:text-white transition-all duration-300"
+                            href="umkm.html"
+                        >
+                            UMKM
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg 
+                            group-hover:text-white transition-all duration-300"
+                            href="galeri.html"
+                        >
+                            Galeri
+                        </a>
+                    </li>
+                    <li class="group relative">
+                        <a
+                            class="relative z-10 font-semibold nav-link px-4 py-2 rounded-lg 
+                            group-hover:text-white transition-all duration-300"
+                            href="about.html"
+                        >
+                            About
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section for Galeri Page -->
+    <div class="relative pt-16">
+        <img alt="Background image of a team working collaboratively" class="w-full h-[400px] object-cover" height="400" src="images/kripik ani2.jpg" width="1920"/>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#1A5276] via-[#1A5276]/70 to-transparent"></div>
+        <div class="absolute inset-0 flex items-center justify-start p-10 md:p-16">
+            <div class="text-white">
+                <div class="border-l-4 border-[#2874A6] pl-4 md:pl-6">
+                    <h1 class="text-3xl md:text-4xl text-white font-bold drop-shadow-md">Galeri</h1>
+                    <h2 class="text-4xl md:text-5xl font-extrabold leading-tight drop-shadow-lg">
+                        Desa Bontomarannu
+                    </h2>
+                </div>
+                <p class="mt-4 text-gray-100 max-w-2xl leading-relaxed">
+                    Jelajahi keindahan dan kehidupan Desa Bontomarannu melalui koleksi foto dan video kami.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 md:px-8 md:py-12 bg-white rounded-lg shadow-xl my-8">
+        <section id="galeri-konten" class="py-8">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center mb-8">
+                    <div class="w-1.5 bg-[#2874A6] h-14 mr-4 rounded-full"></div>
+                    <div>
+                        <h2 class="text-4xl font-bold text-gray-800">Foto & Video Desa</h2>
+                        <p class="text-2xl text-gray-500">Momen dan Keindahan Desa Bontomarannu</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/bunga (4).JPG" alt="Pemandangan Desa 1" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Batas Desa Bontomarannu dan Desa Manyampa di sebelah Barat</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sd (6).JPG" alt="Kegiatan Warga 2" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Batas Desa Bontomarannu dan Desa Manyampa di sebelah Barat</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sd (5).JPG" alt="Produk Lokal 3" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Pengeringan coklat di beberapa halaman terbuka</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kuda.JPG" alt="Tradisi Lokal 4" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Pohon rindang di senpang jalan Desa Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sungai.JPG" alt="Persawahan 5" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Aliran sungai yang jernih</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/wc.JPG" alt="Rumah Adat 6" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">MCK lapangan dipergunakan untuk umum</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sawah.JPG" alt="Panen Raya 7" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Jum'at bersih</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/irigasi.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sawah (7).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sawah (2).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sawah (4).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sawah (6).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kucing.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kucing (3).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kucing (4).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kucing (5).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sd.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sd (2).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sd (3).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sd (7).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kebun (2).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kebun.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/coklat.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/bunga (6).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kkn.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kkn (2).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kkn (3).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kkn (4).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/bunga (3).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/bunga (5).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/bunga.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/bunga (2).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sore.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sore (2).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/masjid (3).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/daun.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/masjid.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/tugu.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kripik.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/batas.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/pohon.JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/sd (4).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kkn (4).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 gallery-item">
+                        <img src="galeri/kkn (4).JPG" alt="Kerajinan Tangan 8" class="w-full h-64 object-cover">
+                        <div class="p-4 bg-gray-100">
+                            <p class="text-gray-700 text-sm">Plang SDN 178 Bontomarannu</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-[#1F2937] text-white px-4 py-8 md:px-8 md:py-10 mt-12 shadow-inner">
+        <div class="container mx-auto">
+            <div class="flex flex-col items-center pb-6 border-b border-gray-700 mb-6">
+                <div class="text-center">
+                    <h1 class="text-xl md:text-2xl text-white font-bold">Desa Bontomarannu</h1>
+                    <p class="text-sm text-gray-300 mt-1">Kec. Bontoramba, Kab. Bulukumba, Sulawesi Selatan</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 text-justify">
+                <div class="space-y-3">
+                    <h2 class="text-lg text-white font-bold flex items-center"><i class="fas fa-globe mr-2 text-[#3498DB]"></i>Website Profil Desa</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Website profil Desa merupakan situs web yang memuat informasi dasar mengenai desa, sejarah, visi dan misi desa, sampai dengan peta wilayah desa.
+                    </p>
+                </div>
+                <div class="space-y-3">
+                    <h2 class="text-lg text-white font-bold flex items-center"><i class="fas fa-code mr-2 text-[#3498DB]"></i>Developer</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Website ini dibuat oleh Khalizatul Jannah, Mahasiswa KKN Universitas Hasanuddin Gelombang 114 Desa Bontomarannu pada Juli-Agustus 2025.
+                    </p>
+                </div>
+                <div class="space-y-3">
+                    <h2 class="text-lg text-white font-bold flex items-center"><i class="fas fa-bullseye mr-2 text-[#3498DB]"></i>Harapan &amp; Tujuan</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Situs web profil ini dibuat untuk tujuan promosi dan publisitas Desa Bontomarannu agar lebih dikenal oleh khalayak ramai baik di dalam maupun di luar Desa Bontomarannu.
+                    </p>
+                </div>
+            </div>
+            <div class="text-center mt-10 border-t border-gray-700 pt-6">
+                <p class="text-xs text-gray-400">
+                    © 2025 Desa Bontomarannu - All rights reserved
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Image Modal (for displaying clicked gallery images) -->
+    <div id="imageModal" class="modal">
+        <div class="image-modal-content">
+            <span class="image-modal-close-button" id="closeImageModalBtn">&times;</span>
+            <img id="modalImage" src="" alt="Full size image">
+        </div>
+    </div>
+
+    <!-- Product Detail Modal (copied for consistency, though not directly used on this page) -->
+    <div id="productDetailModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button" id="closeModalBtn">&times;</span>
+            <h3 id="modalProductName" class="text-3xl font-bold text-[#1A5276] mb-4"></h3>
+            <p id="modalProductDescription" class="text-gray-700 mb-6"></p>
+            <div id="modalProductItems" class="space-y-4">
+                <!-- Product items will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('nav-menu');
+            const header = document.getElementById('main-header');
+
+            // Product data for the modal (empty as it's not used on this page, but kept for consistency)
+            const umkmProducts = []; 
+
+            // Toggle mobile navigation
+            hamburger.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!hamburger.contains(event.target) && !navMenu.contains(event.target) && navMenu.classList.contains('active')) {
+                    navMenu.classList.remove('active');
+                }
+            });
+
+            // Set active navigation link based on current page
+            const currentLocation = location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                // Add click listener to ensure active state is set immediately
+                link.addEventListener('click', function(event) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    // If mobile menu is open, close it after clicking a link
+                    if (navMenu.classList.contains('active') && window.innerWidth <= 767) { 
+                        setTimeout(() => navMenu.classList.remove('active'), 300); 
+                    }
+                });
+
+                // Set active class on page load
+                if (link.getAttribute('href') === currentLocation || (currentLocation === '' && link.getAttribute('href') === 'index.html')) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Header transparency on scroll
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 80) { 
+                    header.classList.add('header-scrolled');
+                } else {
+                    header.classList.remove('header-scrolled');
+                }
+            });
+
+            // --- Image Gallery Modal Functionality ---
+            const imageModal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const closeImageModalBtn = document.getElementById('closeImageModalBtn');
+            const galleryItems = document.querySelectorAll('.gallery-item img');
+
+            galleryItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    modalImage.src = this.src;
+                    imageModal.style.display = 'flex'; // Use flex to center
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling background
+                });
+            });
+
+            closeImageModalBtn.addEventListener('click', function() {
+                imageModal.style.display = 'none';
+                document.body.style.overflow = ''; // Restore scrolling
+            });
+
+            // Close image modal when clicking outside of modal content
+            imageModal.addEventListener('click', function(event) {
+                if (event.target === imageModal) {
+                    imageModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // --- Product Detail Modal (existing, not directly used on this page) ---
+            const productDetailModal = document.getElementById('productDetailModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            function closeModal() {
+                productDetailModal.style.display = 'none';
+                document.body.style.overflow = ''; 
+            }
+
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', closeModal);
+            }
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === productDetailModal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
